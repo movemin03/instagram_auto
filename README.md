@@ -71,14 +71,14 @@ Before using the script, you need to download your account information from Inst
 1. Clone this repository:
 
     ```sh
-    git clone https://github.com/yourusername/instagram-automation.git
-    cd instagram-automation
+    git clone https://github.com/movemin03/instagram_auto.git
+    cd instagram_auto
     ```
 
 2. Install the required Python packages:
 
     ```sh
-    pip install pillow pyautogui beautifulsoup4
+    pip install pillow, pyautogui, beautifulsoup4
     ```
 
 ### Usage
