@@ -21,8 +21,8 @@ Make sure you have the following image files in the same directory as `instagram
 1. Clone this repository:
 
     ```sh
-    git clone https://github.com/yourusername/instagram-automation.git
-    cd instagram-automation
+    git clone https://github.com/movemin03/instagram_auto.git
+    cd instagram_auto
     ```
 
 2. Install the required Python packages:
