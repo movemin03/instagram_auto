@@ -59,6 +59,64 @@ Details for this script will be provided soon.
 - `pillow`
 - `pyautogui`
 
+## instagram_find_unfollower.py
+
+This script helps you find and list users who have unfollowed you on Instagram.
+
+### Prerequisites
+
+Before using the script, you need to download your account information from Instagram:
+
+1. Go to Instagram and log in to your account.
+2. Navigate to Settings > Accounts Center > Your Information and Permissions > Download Your Information.
+3. Submit a request to download your information:
+    - Choose the account you want to check for unfollowers.
+    - Select the type of information: Followers and Following.
+    - Submit the request.
+4. You will receive a download link within approximately 10 minutes. Go back to the same menu to find the download button.
+5. There is no need to extract the zip file. Just provide the path to the downloaded zip file.
+
+### Installation
+
+1. Clone this repository:
+
+    ```sh
+    git clone https://github.com/yourusername/instagram-automation.git
+    cd instagram-automation
+    ```
+
+2. Install the required Python packages:
+
+    ```sh
+    pip install pillow pyautogui beautifulsoup4
+    ```
+
+### Usage
+
+1. Provide the path to the downloaded zip file when prompted by the script:
+
+    ```sh
+    python instagram_find_unfollower.py
+    ```
+
+2. The script will save the list of unfollowers to `desktop/unfollowers.txt`.
+
+### Packaging with PyInstaller
+
+You can create an executable file using PyInstaller:
+
+    ```sh
+    pyinstaller instagram_find_unfollower.py --onefile --hidden-import os --hidden-import zipfile --hidden-import shutil --hidden-import json --hidden-import bs4
+    ```
+
+### Requirements
+
+- Python 3.x
+- `pillow`
+- `pyautogui`
+- `beautifulsoup4`
+- Standard Python libraries: `os`, `zipfile`, `shutil`, `json`
+
 # Find your Unfollower 언팔로워 찾기
 
 Before Use this program, pleas download your date from official instagram
