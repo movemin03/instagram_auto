@@ -28,7 +28,7 @@ Make sure you have the following image files in the same directory as `instagram
 2. Install the required Python packages:
 
     ```sh
-    pip install pillow pyautogui
+    pip install pillow, pyautogui
     ```
 
 ### Usage
