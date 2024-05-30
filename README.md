@@ -1,3 +1,64 @@
+# Instagram Automation Scripts
+
+This repository contains two Python scripts for automating interactions with Instagram:
+
+1. `instagram_commentlike.py`
+2. `instagram_find_unfollower.py`
+
+## instagram_commentlike.py
+
+This script automatically finds and clicks the like button on Instagram posts. It relies on image recognition to locate the like button and the "view more comments" button on the screen.
+
+### Prerequisites
+
+Make sure you have the following image files in the same directory as `instagram_commentlike.py`:
+
+- `target_image.png`: An image of the Instagram like button.
+- `plus_btn.png`: An image of the "view more comments" button.
+
+### Installation
+
+1. Clone this repository:
+
+    ```sh
+    git clone https://github.com/yourusername/instagram-automation.git
+    cd instagram-automation
+    ```
+
+2. Install the required Python packages:
+
+    ```sh
+    pip install pillow pyautogui
+    ```
+
+### Usage
+
+1. Ensure you have the necessary image files (`target_image.png` and `plus_btn.png`) in the same directory as `instagram_commentlike.py`.
+
+2. Run the script and provide the link to the Instagram post you want to automate likes for:
+
+    ```sh
+    python instagram_commentlike.py
+    ```
+
+### Packaging with PyInstaller
+
+You can create an executable file using PyInstaller:
+
+    ```sh
+    pyinstaller instagram_commentlike.py --onefile --hidden-import pillow --hidden-import pyautogui
+    ```
+
+## instagram_find_unfollower.py
+
+Details for this script will be provided soon.
+
+### Requirements
+
+- Python 3.x
+- `pillow`
+- `pyautogui`
+
 # Find your Unfollower 언팔로워 찾기
 
 Before Use this program, pleas download your date from official instagram
