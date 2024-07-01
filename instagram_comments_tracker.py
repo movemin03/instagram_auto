@@ -32,16 +32,24 @@ option = Options()
 option.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 option.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0")
 
-print("이 프로그램을 실행할 때는 다른 크롬 창이 띄워져 있으면 안 됩니다. 다른 크롬 창이 켜져 있던 경우 이 화면에서 더이상 움직이지 않습니다.")
-try:
-    driver = webdriver.Chrome(options=option)
-    driver.get(instagram_main)
-except:
-    print("크롬 드라이버 오류입니다. 이 프로그램을 실행할 때는 다른 크롬 창이 띄워져 있으면 안됩니다. 모든 크롬 창을 끄고 다시 실행해주세요")
-    a = input()
-    exit()
+print("이 프로그램을 실행할 때는 다른 크롬 창이 띄워져 있으면 안 됩니다!")
+driver = webdriver.Chrome(options=option)
 
-# 로그인 완료 여부 확인
+while True:
+    a = input("크롬 계정 선택 창이 있나요? 있다면 y 아니라면 n 입력:")
+    if a == "y":
+        print("크롬 계정을 선택하고 엔터하세요")
+        a = input()
+        print("인스타그램에 접속합니다")
+        break
+    elif a == 'n':
+        print("크롬 계정 선택 창이 없다고 응답하시어 바로 인스타그램에 접속합니다")
+        a = input()
+        exit()
+
+driver = webdriver.Chrome(options=option)
+driver.get(instagram_main)
+print("인스타그램 정책에 따라 로그인이 필요합니다. 로그인해주세요")
 
 while True:
     a = input("로그인이 완료되었다면 y 입력:")
