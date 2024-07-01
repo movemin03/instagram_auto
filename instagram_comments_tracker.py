@@ -36,20 +36,18 @@ print("이 프로그램을 실행할 때는 다른 크롬 창이 띄워져 있�
 driver = webdriver.Chrome(options=option)
 
 while True:
-    a = input("크롬 계정 선택 창이 있나요? 있다면 y 아니라면 n 입력:")
+    a = input("크롬 사용자 선택 창이 있다면 처리 그리고 크롬 사용자 선택 창이 없어도 y 입력:")
     if a == "y":
-        print("크롬 계정을 선택하고 엔터하세요")
-        a = input()
-        print("인스타그램에 접속합니다")
+        print("크롬 사용자 선택 창이 처리됐다고 응답하시어 인스타그램에 접속합니다")
         break
     elif a == 'n':
-        print("크롬 계정 선택 창이 없다고 응답하시어 바로 인스타그램에 접속합니다")
+        print("크롬 사용자 선택을 하지 않으면 프로그램이 창을 인식할 수 없습니다. 프로그램을 종료합니다")
         a = input()
         exit()
 
 driver = webdriver.Chrome(options=option)
 driver.get(instagram_main)
-print("인스타그램 정책에 따라 로그인이 필요합니다. 로그인해주세요")
+print("\n인스타그램 정책에 따라 로그인이 필요합니다. 로그인해주세요")
 
 while True:
     a = input("로그인이 완료되었다면 y 입력:")
