@@ -1,5 +1,4 @@
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,10 +13,54 @@ import subprocess
 import random
 from datetime import datetime
 import requests
+import psutil
+
+def find_process_by_name(name):
+    """이름으로 프로세스를 찾습니다."""
+    for proc in psutil.process_iter(['pid', 'name']):
+        if proc.info['name'] == name:
+            return proc
+    return None
+
+
+def terminate_process(process):
+    """프로세스를 종료하려고 시도하고, 프로세스가 종료될 때까지 대기합니다."""
+    while process.is_running():
+        print(f"프로세스 {process.name()}를 종료하는 중입니다...")
+        process.kill()
+        time.sleep(1)  # 1초 대기 후 다시 확인
+
+
+def kill_process():
+    process_name = "chrome.exe"  # Google Chrome의 실제 프로세스 이름
+    chrome_process = find_process_by_name(process_name)
+
+    if chrome_process:
+        print("크롬 프로그램을 종료해야 본 프로그램을 사용할 수 있습니다. 크롬을 종료하시겠습니까? (y/n)")
+        user_input = input().strip().lower()
+        if user_input == 'y':
+            while chrome_process is not None:
+                try:
+                    chrome_process = find_process_by_name(process_name)
+                    terminate_process(chrome_process)
+                    print(chrome_process)
+                    try:
+                        chrome_process.kill()
+                    except:
+                        pass
+                except:
+                    continue
+        else:
+            print("본 프로그램을 종료합니다.")
+            exit()
+    else:
+        print("크롬이 실행 중이지 않습니다.")
+
+kill_process()
 
 ##사용자 지정
 user = os.getlogin()
-ver = "2024-07-01"
+ver = "2024-07-02"
 print("ver:" + ver)
 print("인스타그램 게시물 댓글 추출 프로그램입니다")
 print("추적하고자 하는 인스타그램 게시물의 링크를 넣어주세요")
