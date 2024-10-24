@@ -14,6 +14,7 @@ import random
 from datetime import datetime
 import requests
 import psutil
+from collections import deque
 
 def find_process_by_name(name):
     """이름으로 프로세스를 찾습니다."""
@@ -165,8 +166,12 @@ def main():
     time.sleep(2)
     main_div = driver.find_element(By.XPATH, '/html/body/div[2]')
     main_div_id = main_div.get_attribute('id')
+    print(main_div_id)
 
-    comment_area_xpath = '//*[@id="' + main_div_id + '"]/div/div/div[2]/div/div/div[1]/div[1]/div[2]/section/main/div/div[1]/div/div[2]/div/div[2]'
+    try:
+        comment_area_xpath = '//*[@id="' + main_div_id + '"]/div/div/div[2]/div/div/div[1]/div[1]/div[1]/section/main/div/div[1]/div/div[2]/div/div[2]/div/div[2]'
+    except:
+        print("댓글 영역을 찾을 수 없습니다. 인스타그램에서 경로를 변경했을 수 있습니다")
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, comment_area_xpath))
     )
@@ -209,31 +214,34 @@ def main():
                                                      driver.find_element(By.XPATH, comment_area_xpath))
 
         if curr_scroll_position == prev_scroll_position:
-            print("8초간 스크롤의 변화를 추가로 추적합니다")
-            time.sleep(8)
+            print("3초간 스크롤의 변화를 추가로 추적합니다")
+            time.sleep(3)
             curr_scroll_position = driver.execute_script("return arguments[0].scrollTop;",
                                                          driver.find_element(By.XPATH, comment_area_xpath))
             if curr_scroll_position == prev_scroll_position:
                 print("8초간 스크롤의 변화를 추적했으나 스크롤 위치의 변동을 탐지하지 못했습니다")
-                print("댓글이 모두 로딩된 것으로 간주합니다 OK")
-                break
+                a = input("추가로 탐지할 것이 남아있다면 y 아니라면 n 을 입력")
+                if a == 'n':
+                    print("댓글이 모두 로딩된 것으로 간주합니다 OK")
+                    break
+                else:
+                    continue
         prev_scroll_position = curr_scroll_position
 
     # HTML 저장
-    '//*[@id="mount_0_0_5X"]/div/div/div[2]/div/div/div[1]/div[1]/div[2]/section/main/div/div[1]/div/div[2]/div/div[2]/div/div[2]'
     html_content = driver.find_element(By.XPATH,
-                                       '//*[@id="' + main_div_id + '"]/div/div/div[2]/div/div/div[1]/div[1]/div[2]/section/main/div/div[1]/div/div[2]/div/div[2]/div/div[2]').get_attribute(
+                                       '//*[@id="' + main_div_id + '"]/div/div/div[2]/div/div/div[1]/div[1]/div[1]/section/main/div/div[1]/div/div[2]/div/div[2]').get_attribute(
         'innerHTML')
 
     soup = BeautifulSoup(html_content, 'html.parser')
     driver.quit()
 
-    # 추출된 데이터를 저장할 리스트
-    insta_id_list = []
-    time_list = []
-    comment_list = []
-    like_list = []
-    thatthat_list = []
+    ## 추출된 데이터를 저장할 리스트
+    insta_id_list = deque()
+    time_list = deque()
+    comment_list = deque()
+    like_list = deque()
+    thatthat_list = deque()
 
     # 최상위 div 태그들을 찾음
     top_divs = soup.find_all("div", recursive=False)
@@ -241,69 +249,99 @@ def main():
     # 각 최상위 div 태그들을 반복하여 데이터 추출
     for div in top_divs:
         try:
-            client_insta_id = div.select_one(
-                'div > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(1) > span:nth-of-type(1) > span > div > a > div > div > span').text.replace(
-                " ", "")
-            client_time = div.select_one(
-                'div > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(1) > span:nth-of-type(2) > a > time')[
-                'datetime'].replace(" ", "")
-            client_comment = div.select_one(
-                'div > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > span').text.replace(
-                "         ", "")
-            client_like = div.select_one(
-                'div > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > span > span').text.replace(
-                " ", "").replace("좋아요", "").replace("개", "")
-            if (client_like == "") or ("답글달기" in client_like):
-                client_like = "0"
-            client_thatthat_obj = div.select_one(
-                'div:nth-of-type(2) > div > div > span')
+            n = 0
+            while True:
 
-            insta_id_list.append(client_insta_id)
-            time_list.append(client_time)
-            comment_list.append(client_comment)
-            like_list.append(client_like)
+                try:
+                    n += 1
+                    print(str(n))
+                    # Insta ID
+                    client_insta_id = div.select_one(
+                        f'div:nth-child({n}) > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div > div:nth-child(1) > span:nth-child(1) > span > div > a > div > div > span'
+                    ).text.replace(" ", "")
+                    print(client_insta_id)
 
-            if client_thatthat_obj is None:
-                client_thatthat = "0"
-                thatthat_list.append(client_thatthat)
-            else:
-                n = 0
-                while True:
-                    try:
-                        n += 1
-                        client_thatthat_id = div.select_one(
-                            f'div:nth-of-type(2) > ul > div:nth-of-type({n}) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(1) > span:nth-of-type(1) > span > div > a > div > div > span').text.replace(
-                            " ", "")
-                        client_thatthat_time = div.select_one(
-                            f'div:nth-of-type(2) > ul > div:nth-of-type({n}) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(1) > span:nth-of-type(2) > a > time')[
-                            'datetime'].replace(
-                            " ", "")
+                    # 시간
+                    client_time = div.select_one(
+                        f'div:nth-child({n}) > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div > div:nth-child(1) > span:nth-child(2) > a > time'
+                    )['datetime'].replace(" ", "")
 
-                        client_thatthat_comment = div.select_one(
-                            f'div:nth-of-type(2) > ul > div:nth-of-type({n}) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > span').text.replace(
-                            " ", "")
-                        client_thatthat_like = div.select_one(
-                            f'div:nth-of-type(2) > ul > div:nth-of-type({n}) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > span > span').text.replace(
-                            " ", "").replace("좋아요", "").replace("개", "")
+                    # 댓글
+                    client_comment = div.select_one(
+                        f'div:nth-child({n}) > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div > div:nth-child(2) > span'
+                    ).text.replace(" ", "")
 
-                        if (client_thatthat_like == "") or ("답글달기" in client_thatthat_like):
-                            client_thatthat_like = "0"
+                    # 좋아요
+                    client_like = div.select_one(
+                        f'div:nth-child({n}) > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div > span > span'
+                    ).text.replace(" ", "").replace("좋아요", "").replace("개", "")
+                    if (client_like == "") or ("답글달기" in client_like):
+                        client_like = "0"
 
-                        insta_id_list.append(client_thatthat_id)
-                        time_list.append(client_thatthat_time)
-                        comment_list.append(client_thatthat_comment)
-                        like_list.append(client_thatthat_like)
+                    insta_id_list.append(client_insta_id)
+                    time_list.append(client_time)
+                    comment_list.append(client_comment)
+                    like_list.append(client_like)
 
-                    except AttributeError:
-                        break  # 유효한 값을 찾으면 반복문을 종료합니다.
-                    except Exception as e:
-                        print(f"예상치 못한 오류 발생: {e}")
-                        break  # 예상치 못한 오류가 발생하면 반복문을 종료합니다.
-                client_thatthat = n - 1
-                thatthat_list.append(client_thatthat)
-                for _ in range(n - 1):
-                    client_thatthat_thatthat = "대댓글"
-                    thatthat_list.append(client_thatthat_thatthat)
+                    # 대댓글 처리
+                    client_thatthat_obj = div.select_one(f'div:nth-child({n}) > div:nth-child(2) > ul')
+                    if client_thatthat_obj is None:
+                        client_thatthat = "0"
+                        thatthat_list.append(client_thatthat)
+                    else:
+                        m = 0
+                        while True:
+                            try:
+                                #'div:nth-child({n}) > div:nth-child(2) > ul > div > '
+                                m += 1
+                                # 대댓글 ID
+                                client_thatthat_id = div.select_one(
+                                    f'div:nth-child({n}) > div:nth-child(2) > ul > div:nth-child({m}) > div > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div > div:nth-child(1) > span:nth-child(1) > span > div > a > div > div > span'
+                                ).text.replace(" ", "")
+                                print("대댓", client_thatthat_id)
+
+                                # 대댓글 시간
+                                client_thatthat_time = div.select_one(
+                                    f'div:nth-child({n}) > div:nth-child(2) > ul > div:nth-child({m}) > div > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div > div:nth-child(1) > span:nth-child(2) > a > time'
+                                )['datetime'].replace(" ", "")
+
+                                # 대댓글 내용
+                                client_thatthat_comment = div.select_one(
+                                    f'div:nth-child({n}) > div:nth-child(2) > ul > div:nth-child({m}) > div > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div > div:nth-child(2) > span'
+                                ).text.replace(" ", "")
+                                #//*[@id="mount_0_0_YG"]/div/div/div[2]/div/div/div[2]/div/div/div[1]/div[1]/div/div/div/div[1]/div/div[2]/div/div[4]/div[2]/ul/div[1]/div/div[2]/div[1]/div[1]/div/div[2]/span
+                                # 대댓글 좋아요
+                                client_thatthat_like = div.select_one(
+                                    f'div:nth-child({n}) > div:nth-child(2) > ul > div:nth-child({m}) > div > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div > span > span'
+                                ).text.replace(" ", "").replace("좋아요", "").replace("개", "")
+                                #//*[@id="mount_0_0_YG"]/div/div/div[2]/div/div/div[2]/div/div/div[1]/div[1]/div/div/div/div[1]/div/div[2]/div/div[4]/div[2]/ul/div[1]/div/div[2]/div[1]/div[2]/div[1]/span/span
+
+                                if (client_thatthat_like == "") or ("답글달기" in client_thatthat_like):
+                                    client_thatthat_like = "0"
+
+                                insta_id_list.append(client_thatthat_id)
+                                time_list.append(client_thatthat_time)
+                                comment_list.append(client_thatthat_comment)
+                                like_list.append(client_thatthat_like)
+
+                            except AttributeError:
+                                break  # 유효한 값을 찾지 못하면 대댓글 반복문 종료
+                            except Exception as e:
+                                print(f"예상치 못한 오류 발생: {e}")
+                                break  # 예상치 못한 오류 발생 시 대댓글 반복문 종료
+
+                        client_thatthat = m - 1
+                        thatthat_list.append(client_thatthat)
+                        for _ in range(m - 1):
+                            client_thatthat_thatthat = "대댓글"
+                            thatthat_list.append(client_thatthat_thatthat)
+
+                except AttributeError:
+                    break  # 유효한 값을 찾지 못하면 메인 댓글 반복문 종료
+                except Exception as e:
+                    print(f"예상치 못한 오류 발생: {e}")
+                    break  # 예상치 못한 오류 발생 시 메인 댓글 반복문 종료
+
         except Exception as e:
             print(e)
             print("없음")
